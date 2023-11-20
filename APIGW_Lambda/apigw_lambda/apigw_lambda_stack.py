@@ -15,17 +15,20 @@ class ApigwLambdaStack(Stack):
 
         backend = _lambda.Function(
             self,
-            "LambdaBackend",
+            "lambda_backend",
             handler="index.lambda_handler",
+            runtime=_lambda.Runtime.PYTHON_3_11,
             code=_lambda.Code.from_asset(
-                path=os.path.join(__file__, ""),
+                path="lambda",
                 bundling=BundlingOptions(
-                    image=_lambda.Runtime.PYTHON_3_11.bundlingImage,
+                    image=_lambda.Runtime.PYTHON_3_11.bundling_image,
                     command=[
                         "bash",
                         "-c",
-                        "pip install -r requirements.txt -t  /asset-output && rsync -au . /asset-output",
+                        "pip install -r requirements.txt -t  /asset-output && rsync -r . /asset-output",
                     ],
                 ),
             ),
         )
+
+        api = apigw.RestApi(self, "rest_api")
